@@ -8,8 +8,13 @@
 int
 main(int argc, char* argv[])
 {
-    (void) argc;
-    (void) argv;
+    if (2 > argc)
+    {
+        fprintf(stderr, "Usage: %s THRESHOLD\n", argv[0]);
+        return EXIT_FAILURE;
+    } // if
+
+    int const threshold = atoi(argv[1]);
 
     htsFile* const restrict fh = bcf_open("-", "r");
     if (NULL == fh)
@@ -50,7 +55,6 @@ main(int argc, char* argv[])
     int ndp_arr = 0;
     int* restrict dp = NULL;
 
-    size_t count = 0;
     while (0 == bcf_read(fh, hdr, rec))
     {
         if (1 != bcf_get_format_int32(hdr, rec, "DP", &dp, &ndp_arr))
@@ -59,14 +63,13 @@ main(int argc, char* argv[])
             continue;
         } // if
 
-        if (20 <= dp[0])
+        if (threshold <= dp[0])
         {
-            fprintf(stdout, "%s\t%i\t%i\n", seqnames[rec->rid], rec->pos, rec->pos + rec->rlen);
+            fprintf(stdout, "%s\t%i\t%i\n", seqnames[rec->rid],
+                                            rec->pos,
+                                            rec->pos + rec->rlen);
         } // if
-        count += 1;
     } // while
-
-    fprintf(stderr, "records: %zu\n", count);
 
     free(seqnames);
     free(dp);
