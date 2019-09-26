@@ -74,6 +74,7 @@ main(int argc, char* argv[])
     free(seqnames);
     free(dp);
 
+    bcf_destroy(rec);
     bcf_hdr_destroy(hdr);
     bcf_close(fh);
 
