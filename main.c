@@ -22,6 +22,7 @@ main(int argc, char* argv[])
         fprintf(stderr, "bcf_open() failed\n");
         return EXIT_FAILURE;
     } // if
+    // htsFile* const htserr = bcf_open(
 
     bcf_hdr_t* const restrict hdr = bcf_hdr_read(fh);
 
@@ -60,6 +61,8 @@ main(int argc, char* argv[])
         if (1 != bcf_get_format_int32(hdr, rec, "DP", &dp, &ndp_arr))
         {
             fprintf(stderr, "bcf_get_format_int32() failed\n");
+            fprintf(stderr, "pos: %u, rlen: %u\n", rec->pos, rec->rlen);
+            // bcf_write(htserr, hdr, rec);
             continue;
         } // if
 
