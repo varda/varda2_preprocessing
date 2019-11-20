@@ -1,6 +1,6 @@
 #include <stddef.h>     // size_t
 #include <stdio.h>      // fprintf
-#include <stdlib.h>     // EXIT_*
+#include <stdlib.h>     // EXIT_*, atoi
 
 #include "htslib/vcf.h"     // hts*, bcf_*
 
@@ -14,7 +14,7 @@ main(int argc, char* argv[])
         return EXIT_FAILURE;
     } // if
 
-    int const threshold = atoi(argv[1]);
+    int const threshold = atoi(argv[1]);  // FIXME: unsafe
 
     htsFile* const restrict fh = bcf_open("-", "r");
     if (NULL == fh)
@@ -22,7 +22,6 @@ main(int argc, char* argv[])
         fprintf(stderr, "bcf_open() failed\n");
         return EXIT_FAILURE;
     } // if
-    // htsFile* const htserr = bcf_open(
 
     bcf_hdr_t* const restrict hdr = bcf_hdr_read(fh);
 
@@ -58,17 +57,15 @@ main(int argc, char* argv[])
 
     while (0 == bcf_read(fh, hdr, rec))
     {
-        if (1 != bcf_get_format_int32(hdr, rec, "DP", &dp, &ndp_arr))
+        int depth = 0;
+        if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &ndp_arr))
         {
-            fprintf(stderr, "bcf_get_format_int32() failed\n");
-            fprintf(stderr, "pos: %u, rlen: %u\n", rec->pos, rec->rlen);
-            // bcf_write(htserr, hdr, rec);
-            continue;
-        } // if
+            depth = dp[0];
+        } // else
 
-        if (threshold <= dp[0])
+        if (threshold <= depth)
         {
-            fprintf(stdout, "%s\t%i\t%i\n", seqnames[rec->rid],
+            fprintf(stdout, "%s\t%d\t%d\n", seqnames[rec->rid],
                                             rec->pos,
                                             rec->pos + rec->rlen);
         } // if
