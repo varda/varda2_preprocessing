@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Convert gVCF to coverage.')
     parser.add_argument('--threshold', '-t', type=int, default=10, help='DP threshold')
-    parser.add_argument('--merge', '-m', action='store_true', help='Merge entries')
+    parser.add_argument('--no_merge', '-n', dest='merge', action='store_false', help='Do not merge entries')
     parser.add_argument('--distance', '-d', type=int, default=0, help='Merging distance')
     args = parser.parse_args()
 
