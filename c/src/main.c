@@ -1,6 +1,7 @@
 #include <stddef.h>     // size_t
 #include <stdio.h>      // fprintf
 #include <stdlib.h>     // EXIT_*, atoi
+#include <getopt.h>     // getopt
 
 #include "htslib/vcf.h"     // hts*, bcf_*
 
@@ -8,13 +9,42 @@
 int
 main(int argc, char* argv[])
 {
-    if (2 > argc)
-    {
-        fprintf(stderr, "Usage: %s THRESHOLD\n", argv[0]);
-        return EXIT_FAILURE;
-    } // if
 
-    int const threshold = atoi(argv[1]);  // FIXME: unsafe
+    extern char *optarg;
+    int threshold = 10, merge = 1, distance = 0;
+    int nflag = 0, dflag = 0;
+    int c, err = 0;
+
+    static char usage[] = "usage: %s [-t threshold] [-d distance] [-n]\n";
+
+    while ((c = getopt(argc, argv, "t:nd:")) != -1) {
+        switch (c) {
+        case 't':
+            threshold = atoi(optarg);
+            break;
+        case 'n':
+            nflag = 1;
+            merge = 0;
+            break;
+        case 'd':
+            dflag = 1;
+            distance = atoi(optarg);
+            break;
+        case '?':
+            err = 1;
+            break;
+        }
+    }
+
+    if (nflag && dflag) {
+        fprintf(stderr, "Both no merge and distance specified!\n");
+        err += 1;
+    }
+
+    if (err) {
+        fprintf(stderr, usage, argv[0]);
+        return EXIT_FAILURE;
+    }
 
     htsFile* const fh = bcf_open("-", "r");
     if (NULL == fh)
