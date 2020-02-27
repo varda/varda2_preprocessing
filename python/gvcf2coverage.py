@@ -7,7 +7,7 @@ def eprint(*args):
     print(*args, file=sys.stderr)
 
 
-def main(threshold, distance):
+def main(threshold, merge, distance):
 
     vcf = VCF(fname='-', gts012=False, lazy=False, strict_gt=False)
 
@@ -47,6 +47,13 @@ def main(threshold, distance):
         start = entry.start
         end = entry.end
         ploidy = entry.ploidy
+
+        #
+        # When we don't merge, just print here and proceed
+        #
+        if not merge:
+            print(chrom, start, end, ploidy, sep="\t")
+            continue
 
         #
         # We just started
@@ -93,7 +100,7 @@ def main(threshold, distance):
     #
     # If the last iteration of the loop was not a jump, we still need to print
     #
-    if not jump:
+    if merge and not jump:
         print(window_chrom, window_start, window_end, window_ploidy, sep="\t")
 
 
@@ -101,7 +108,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Convert gVCF to coverage.')
     parser.add_argument('--threshold', '-t', type=int, default=10, help='DP threshold')
-    parser.add_argument('--distance', '-d',  type=int, default=0, help='Merging distance')
+    parser.add_argument('--merge', '-m', action='store_true', help='Merge entries')
+    parser.add_argument('--distance', '-d', type=int, default=0, help='Merging distance')
     args = parser.parse_args()
 
-    main(args.threshold, args.distance)
+    main(args.threshold, args.merge, args.distance)
