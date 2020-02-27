@@ -104,7 +104,7 @@ main(int argc, char* argv[])
 
         if (threshold <= (int)depth)
         {
-            fprintf(stdout, "%s\t%d\t%d\t%d\n", seqnames[rec->rid],
+            fprintf(stdout, "%s\t%ld\t%ld\t%d\n", seqnames[rec->rid],
                                                 rec->pos,
                                                 rec->pos + rec->rlen,
                                                 ploidy);
