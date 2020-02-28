@@ -27,7 +27,7 @@ int
 main(int argc, char* argv[])
 {
     int threshold = 10;
-    int merge = 1;
+    bool merge = true;
     int distance = 0;
     bool nflag = false;
     bool dflag = false;
@@ -43,7 +43,7 @@ main(int argc, char* argv[])
                 break;
             case 'n':
                 nflag = true;
-                merge = 0;
+                merge = false;
                 break;
             case 'd':
                 dflag = true;
@@ -154,7 +154,7 @@ main(int argc, char* argv[])
         //
         // When we don't merge, just print here and proceed
         //
-        if (0 == merge)
+        if (!merge)
         {
             (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", chrom, start, end, ploidy);
             continue;
@@ -201,7 +201,7 @@ main(int argc, char* argv[])
     //
     // If the last iteration of the loop was not a jump, we still need to print
     //
-    if (0 != merge && !jump)
+    if (merge && !jump)
     {
         (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
     } // if
