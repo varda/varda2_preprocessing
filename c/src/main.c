@@ -59,6 +59,11 @@ main(int argc, char* argv[])
     } // if
 
     bcf_hdr_t* const hdr = bcf_hdr_read(fh);
+    if (NULL == hdr)
+    {
+        fprintf(stderr, "bcf_hdr_read() failed\n");
+        return EXIT_FAILURE;
+    } // if
 
     if (1 != bcf_hdr_nsamples(hdr))
     {
