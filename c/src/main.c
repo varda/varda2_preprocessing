@@ -30,8 +30,8 @@ main(int argc, char* argv[])
     int merge = 1;
     int distance = 0;
     bool nflag = false;
-    bool dflag = 0;
-    int err = 0;
+    bool dflag = false;
+    bool err = false;
 
     int opt = -1;
     while ((opt = getopt(argc, argv, "t:nd:")) != -1)
@@ -50,7 +50,7 @@ main(int argc, char* argv[])
                 distance = atoi(optarg);
                 break;
             case '?':
-                err = 1;
+                err = true;
                 break;
         } // switch
     } // while
@@ -58,10 +58,10 @@ main(int argc, char* argv[])
     if (nflag && dflag)
     {
         (void) fprintf(stderr, "Both no merge and distance specified!\n");
-        err += 1;
+        err = true;
     } // if
 
-    if (0 != err)
+    if (err)
     {
         static char const* const usage = "usage: %s [-t threshold] [-d distance] [-n]\n";
         fprintf(stderr, usage, argv[0]);
@@ -76,6 +76,12 @@ main(int argc, char* argv[])
     } // if
 
     bcf_hdr_t* const hdr = bcf_hdr_read(fh);
+    if (NULL == hdr)
+    {
+        (void) fprintf(stderr, "bcf_hdr_read() failed\n");
+        goto error1;
+    } // if
+
     if (1 != bcf_hdr_nsamples(hdr))
     {
         (void) fprintf(stderr, "#samples = %d\n", bcf_hdr_nsamples(hdr));
