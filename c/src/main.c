@@ -62,7 +62,7 @@ main(int argc, char* argv[])
     if (NULL == hdr)
     {
         fprintf(stderr, "bcf_hdr_read() failed\n");
-        return EXIT_FAILURE;
+        goto error1;
     } // if
 
     if (1 != bcf_hdr_nsamples(hdr))
