@@ -111,7 +111,7 @@ main(int argc, char* argv[])
 
     int window_start = 0;
     int window_end = 0;
-    const char* window_chrom = NULL;
+    char const* window_chrom = NULL;
     int window_ploidy = 0;
 
     while (0 == bcf_read(fh, hdr, rec))
@@ -147,7 +147,7 @@ main(int argc, char* argv[])
         //
         // Convenience handles
         //
-        const char* chrom = seqnames[rec->rid];
+        char const* chrom = seqnames[rec->rid];
         int start = rec->pos;
         int end = rec->pos + rec->rlen;
 
