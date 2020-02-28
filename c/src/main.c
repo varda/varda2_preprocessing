@@ -191,6 +191,7 @@ main(int argc, char* argv[])
         } // if
         else
         {
+            jump = false;
             window_start = imin(window_start, start);
             window_end = imax(window_end, end);
             // eprint(f"No jump! s:{start}, w_s={window_start} e:{end} w_e={window_end}")
