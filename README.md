@@ -1,5 +1,6 @@
-gvcf2coverage
-=============
+# gvcf2coverage
+
+## Introduction
 
 This repository contains two functionally similar implementations of a coverage
 extractor from gVCF files.
@@ -14,22 +15,25 @@ and output on stdout in the following tab separated format:
 
 e.g.:
 ```
-chr1    10033   10038   2
-chr1    10038   10043   2
-chr1    10043   10044   2
-chr1    10044   10048   2
-chr1    10048   10049   2
-chr1    10049   10050   2
-chr1    10050   10051   2
-chr1    10051   10054   2
+NC_000001.10    10033   10038   2
+NC_000001.10    10038   10043   2
+NC_000001.10    10043   10044   2
+NC_000001.10    10044   10048   2
+NC_000001.10    10048   10049   2
+NC_000001.10    10049   10050   2
+NC_000001.10    10050   10051   2
+NC_000001.10    10051   10054   2
 ```
 
 
-It is recommended to immediately pipe the results of gvcf2coverage(.py) to
-`bedtools merge` to merge all the individual adjecent entries.
+Both tools by default merge the resulting entries with a default merging
+distance of 0.  If merging is disabled, it is recommended to immediately pipe
+the results of gvcf2coverage(.py) to `bedtools merge` to merge all the
+individual adjecent entries. Note that bedtools will also merge the entries
+with a different value in the ploidy column, therefore we opted to do the
+merging in the gvcf2coverage tool.
 
-Python
-------
+## Python
 
 Requirements
 
@@ -43,22 +47,28 @@ source venv/bin/activate
 pip install cyvcf2
 ```
 
+```
+usage: gvcf2coverage.py [-h] [--threshold THRESHOLD] [--no_merge] [--distance DISTANCE]
+```
 
 
-Building C
-----------
+## C
 
-Requires htslib.
-
-`make HTSLIB_INCDIR=../../../samtools/include HTSLIB_LIBDIR=../../../samtools/lib`
+Requires HTSLIB library.
 
 
-Running C
----------
+On the LUMC Slurm Shark cluster this means:
+```
+module load library/htslib/1.10.2/gcc-8.3.1
+make
+```
 
-`export LD_LIBRARY_PATH=$HTSLIB_LIBDIR`
+If your location is non-standard you can pass it like this to the makefile:
+```
+make HTSLIB_INCDIR=../../../samtools/include HTSLIB_LIBDIR=../../../samtools/lib
+```
 
-
-Recommendation
---------------
-
+And for running:
+```
+export LD_LIBRARY_PATH=$HTSLIB_LIBDIR
+```
