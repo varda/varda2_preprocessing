@@ -1,4 +1,4 @@
-# gvcf2coverage
+# Varda2 preprocessing
 
 ## Coverage
 
