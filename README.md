@@ -1,6 +1,6 @@
 # gvcf2coverage
 
-## Introduction
+## Coverage
 
 This repository contains two functionally similar implementations of a coverage
 extractor from gVCF files.
@@ -33,7 +33,7 @@ individual adjecent entries. Note that bedtools will also merge the entries
 with a different value in the ploidy column, therefore we opted to do the
 merging in the gvcf2coverage tool.
 
-## Python
+### Python
 
 Requirements
 
@@ -52,7 +52,7 @@ usage: gvcf2coverage.py [-h] [--threshold THRESHOLD] [--no_merge] [--distance DI
 ```
 
 
-## C
+### C
 
 Requires HTSLIB library.
 
@@ -71,4 +71,10 @@ make HTSLIB_INCDIR=../../../samtools/include HTSLIB_LIBDIR=../../../samtools/lib
 And for running:
 ```
 export LD_LIBRARY_PATH=$HTSLIB_LIBDIR
+```
+
+## Variants
+
+```
+bcftools view --trim-alt-alleles --exclude-uncalled <INPUT_VCF> | bcftools norm --multiallelics - | bcftools view --exclude 'ALT=="*"' > <OUTPUT_VCF>
 ```
