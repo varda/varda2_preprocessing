@@ -21,7 +21,9 @@ rid of alt-alleles and multi-allelic entries so that we end up with a single
 variant per line.
 
 ```
-bcftools view --trim-alt-alleles --exclude-uncalled <INPUT_VCF> | bcftools norm --multiallelics - | bcftools view --exclude 'ALT=="*"' > <OUTPUT_VCF>
+bcftools view --trim-alt-alleles --exclude-uncalled <INPUT_VCF> | \
+  bcftools norm --multiallelics - | \
+  bcftools view --exclude 'ALT=="*"' > <OUTPUT_VCF>
 ```
 
 The second step is to take the filtered VCF file and convert it into a Varda
