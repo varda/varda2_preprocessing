@@ -1,5 +1,66 @@
 # Varda2 preprocessing
 
+The Varda2 database stores genomic variants and coverage information. To enable
+efficient and meaningful insertion into the database we have defined a set of
+preprocessing steps that all participating centers should follow. Note that
+these steps are not cast in stone and hopefully will converge as a set of best
+practices between the centers.
+
+The information about variants comes from VCF files and the information about
+coverage comes from gVCF files. The following two sections describe the steps
+in more detail.
+
+
+## Variants
+
+To extract variants from the VCF file in a way that Varda can process them
+there are two steps involved.
+
+The first step is a pipeline of `bcftools` filtering and normalisation to get
+rid of alt-alleles and multi-allelic entries so that we end up with a single
+variant per line.
+
+```
+bcftools view --trim-alt-alleles --exclude-uncalled <INPUT_VCF> | bcftools norm --multiallelics - | bcftools view --exclude 'ALT=="*"' > <OUTPUT_VCF>
+```
+
+The second step is to take the filtered VCF file and convert it into a Varda
+variant file.
+
+Requirements:
+- python >= 3.6
+- cyvcf2
+
+To create a virtual environment with cyvcf2:
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install cyvcf2
+```
+
+```
+usage: vcf2variants.py < <VCF_FILE> > variants.varda
+```
+
+This outputs the following tab separated format:
+`<CHROM> <START> <END> <PLOIDY> <PHASE SET> <INSERTED LENGTH> <INSERTED SEQUENCE>`
+
+
+e.g.:
+```
+NC_000001.10    13656   13658   1       0       0       .
+NC_000001.10    13895   13896   1       0       1       A
+NC_000001.10    14164   14165   1       0       1       G
+NC_000001.10    14672   14673   1       0       1       C
+NC_000001.10    14698   14699   1       0       1       G
+NC_000001.10    14906   14907   1       0       1       G
+```
+
+NB:
+- `-1` in `PHASE SET` is homozygous, `0` is unphased
+- `.` in `INSERTED SEQUENCE` is no insertion (thus deletion only)
+
+
 ## Coverage
 
 This repository contains two functionally similar implementations of a coverage
@@ -71,10 +132,4 @@ make HTSLIB_INCDIR=../../../samtools/include HTSLIB_LIBDIR=../../../samtools/lib
 And for running:
 ```
 export LD_LIBRARY_PATH=$HTSLIB_LIBDIR
-```
-
-## Variants
-
-```
-bcftools view --trim-alt-alleles --exclude-uncalled <INPUT_VCF> | bcftools norm --multiallelics - | bcftools view --exclude 'ALT=="*"' > <OUTPUT_VCF>
 ```
