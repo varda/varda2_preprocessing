@@ -4,24 +4,26 @@ from os.path import commonprefix
 
 filename = '-'
 
+
 # Strip the prefix from a string
-def remove_prefix(text, prefix):
-    if text.startswith(prefix):
-        return text[len(prefix):]
+def remove_prefix(text, pref):
+    if text.startswith(pref):
+        return text[len(pref):]
     return text
 
 
 # Strip the suffix from a string
-def remove_suffix(text, suffix):
-    if text.endswith(suffix):
-        return text[:len(text) - len(suffix)]
+def remove_suffix(text, suf):
+    if text.endswith(suf):
+        return text[:len(text) - len(suf)]
     return text
 
 
 # Return the common suffix of a list of strings
-def commonsuffix(entries):
-    suffix = commonprefix([entry[::-1] for entry in entries])
-    return suffix[::-1]
+def common_suffix(entries):
+    suf = commonprefix([entry[::-1] for entry in entries])
+    return suf[::-1]
+
 
 pid_dict = {}
 pid_inc = 1
@@ -44,7 +46,7 @@ for variant in cyvcf2.VCF(filename, gts012=True, lazy=True):
     alt_remain = remove_prefix(alt, prefix)
 
     # Now remove common suffix from ref and ald
-    suffix = commonsuffix([ref_remain, alt_remain])
+    suffix = common_suffix([ref_remain, alt_remain])
     suffix_len = len(suffix)
 
     # Derive inserted string from the remaining alt string
@@ -58,22 +60,22 @@ for variant in cyvcf2.VCF(filename, gts012=True, lazy=True):
     norm_start = variant.start + prefix_len
     norm_end = variant.end - suffix_len
 
-    def pgt2phase_set_id(pid):
+    def pgt2phase_set_id(p):
         global pid_inc
-        if pid in pid_dict:
-            varda_pid = pid_dict[pid]
+        if p in pid_dict:
+            v = pid_dict[p]
         else:
-            varda_pid = pid_inc
+            v = pid_inc
             pid_inc += 1
-            pid_dict[pid] = varda_pid
-
-        return varda_pid
+            pid_dict[p] = v
+        return v
 
     # Determine phase set ID
     # TODO: ideally, if a phase set id only occurs once, because of filtering,
-    # we would like to mark the variant unphased
+    #       we would like to mark the variant unphased
     pgt_array = variant.format('PGT')
-    if (pgt_array):
+    varda_pid = 0
+    if pgt_array:
         if len(pgt_array) != 1:
             print("ERROR: number of phased genotypes is not 1")
             continue
@@ -83,12 +85,10 @@ for variant in cyvcf2.VCF(filename, gts012=True, lazy=True):
 
         if pgt == '1|1':
             varda_pid = -1
-
         elif pgt == '0|1':
             varda_pid = pgt2phase_set_id(f"{chrom}_{pid}_B")
         elif pgt == '1|0':
             varda_pid = pgt2phase_set_id(f"{chrom}_{pid}_A")
-
         else:
             print('UNEXPECTED PGT: %s' % pgt, file=sys.stderr)
 
@@ -116,7 +116,7 @@ for variant in cyvcf2.VCF(filename, gts012=True, lazy=True):
         assert len(genotypes) == 1
         # Assume we have one variant
         first_sample = genotypes[0]
-        # The format is [alelle_0, allele_1, ... allele_N, <Phasing>]
+        # The format is [allele_0, allele_1, ... allele_N, <Phasing>]
         without_phasing = first_sample[:-1]
 
         return count_positive_integers(without_phasing)
