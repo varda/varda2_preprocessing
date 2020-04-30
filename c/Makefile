@@ -1,7 +1,7 @@
 .PHONY: install
 
 gvcf2coverage: src/main.c
-	gcc -o $@ -Wall -Wextra -Wpedantic -std=c99 -O3 -I$(HTSLIB_INCDIR) -L$(HTSLIB_LIBDIR) src/main.c -lhts
+	$(CC) -o $@ -Wall -Wextra -Wpedantic -std=c99 -O3 -I$(HTSLIB_INCDIR) -L$(HTSLIB_LIBDIR) src/main.c -lhts
 
 install: gvcf2coverage
 	mkdir -p $(PREFIX)/bin
