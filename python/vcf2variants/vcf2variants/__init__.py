@@ -1,6 +1,7 @@
-import cyvcf2
 import sys
 from os.path import commonprefix
+import argparse
+import cyvcf2
 
 # Strip the prefix from a string
 def remove_prefix(text, pref):
@@ -40,10 +41,7 @@ def count_non_ref_alleles(genotypes):
     return count_positive_integers(without_phasing)
 
 
-
-def main():
-
-    filename = '-'
+def vcf2variants(filename):
 
     pid_dict = {}
     pid_inc = 1
@@ -129,3 +127,11 @@ def main():
         non_ref_allele_count = count_non_ref_alleles(variant.genotypes)
 
         print(variant.CHROM, norm_start, norm_end, non_ref_allele_count, varda_pid, inserted_len, inserted, sep='\t')
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Convert VCF to variants.')
+    args = parser.parse_args()
+
+    vcf2variants('-')
