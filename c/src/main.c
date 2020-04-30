@@ -1,3 +1,5 @@
+// VERSION 0.1
+
 #include <stdbool.h>    // bool, false, true
 #include <stddef.h>     // size_t
 #include <stdio.h>      // stderr, stdout, fprintf
