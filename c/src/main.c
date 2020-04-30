@@ -33,10 +33,11 @@ main(int argc, char* argv[])
     int distance = 0;
     bool nflag = false;
     bool dflag = false;
+    bool hflag = false;
     bool err = false;
 
     int opt = -1;
-    while ((opt = getopt(argc, argv, "t:nd:")) != -1)
+    while ((opt = getopt(argc, argv, "t:nd:h")) != -1)
     {
         switch (opt)
         {
@@ -51,6 +52,9 @@ main(int argc, char* argv[])
                 dflag = true;
                 distance = atoi(optarg);
                 break;
+            case 'h':
+                hflag = true;
+                break;
             case '?':
                 err = true;
                 break;
@@ -63,11 +67,18 @@ main(int argc, char* argv[])
         err = true;
     } // if
 
-    if (err)
+    if (err || hflag)
     {
-        static char const* const usage = "usage: %s [-t threshold] [-d distance] [-n]\n";
+        static char const* const usage = "usage: %s [-h] [-t threshold] [-d distance] [-n]\n";
         fprintf(stderr, usage, argv[0]);
-        return EXIT_FAILURE;
+        if (err)
+        {
+            return EXIT_FAILURE;
+        } // if
+        else
+        {
+            return EXIT_SUCCESS;
+        } // else
     } // if
 
     htsFile* const fh = bcf_open("-", "r");
