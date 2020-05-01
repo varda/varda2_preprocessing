@@ -1,13 +1,13 @@
 import sys
 import argparse
-from cyvcf2 import VCF
+#from cyvcf2 import VCF
 
 
 def eprint(*args):
     print(*args, file=sys.stderr)
 
 
-def main(threshold, merge, distance):
+def gvcf2coverage(threshold, merge, distance):
 
     vcf = VCF(fname='-', gts012=False, lazy=False, strict_gt=False)
 
@@ -104,7 +104,7 @@ def main(threshold, merge, distance):
         print(window_chrom, window_start, window_end, window_ploidy, sep="\t")
 
 
-if __name__ == '__main__':
+def main():
 
     parser = argparse.ArgumentParser(description='Convert gVCF to coverage.')
     parser.add_argument('--threshold', '-t', type=int, default=10, help='DP threshold')
@@ -112,4 +112,4 @@ if __name__ == '__main__':
     parser.add_argument('--distance', '-d', type=int, default=0, help='Merging distance')
     args = parser.parse_args()
 
-    main(args.threshold, args.merge, args.distance)
+    gvcf2coverage(args.threshold, args.merge, args.distance)
