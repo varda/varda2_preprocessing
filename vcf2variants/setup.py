@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='vcf2variants',
-    version='0.2',
+    version='0.3',
     description='A python tool to convert vcf to varda variant files.',
     url='http://github.com/varda/varda2_preprocessing',
     author='Mark Santcroos',

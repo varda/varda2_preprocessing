@@ -3,6 +3,7 @@ from os.path import commonprefix
 import argparse
 import cyvcf2
 
+
 # Strip the prefix from a string
 def remove_prefix(text, pref):
     if text.startswith(pref):
@@ -79,7 +80,7 @@ def vcf2variants(filename):
         norm_end = variant.end - suffix_len
 
         def pgt2phase_set_id(p):
-            global pid_inc
+            nonlocal pid_inc
             if p in pid_dict:
                 v = pid_dict[p]
             else:
