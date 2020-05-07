@@ -10,6 +10,7 @@ The information about variants comes from VCF files and the information about
 coverage comes from gVCF files. The following two sections describe the steps
 in more detail.
 
+![Process Flow](dag.png)
 
 ## Variants
 
