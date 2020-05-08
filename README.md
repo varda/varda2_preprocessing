@@ -12,11 +12,11 @@ in more detail.
 
 ## Workflow
 
-The following figure depicts the process DAG generated from the Snakemake workflow at https://git.lumc.nl/klinische-genetica/capture-lumc/vcf-to-varda.
+The following figure depicts the process DAG generated from the Snakemake workflow at https://git.lumc.nl/klinische-genetica/capture-lumc/vcf-to-varda. The rules are described below. For all the details, look at the workflow itself.
 
 ![Process Flow](dag.png)
 
-### Variants
+## Variants
 
 To extract variants from the VCF file in a way that Varda can process them, multiple steps are involved:
 
@@ -63,14 +63,14 @@ NB:
 
 ## Coverage
 
-This repository contains two functionally similar implementations of a coverage
-extractor from gVCF files.
+To extract the coverage from gVCF files, the following steps are required.
 
-The Python version is more readable and apt for modification, but the C version
-is roughly 12x faster.
+- gvcf2coverage:
+  - `gvcf2coverage < {input} > {output}`
+- cov_cthreepo:
+  - `cthreepo --mapfile h37 --infile {input} --id_from uc --outfile {output} --id_to rs`
 
-They both read the gvcf input (either compressed or uncompressed) from stdin
-and output on stdout in the following tab separated format:
+This outputs the following tab separated format:
 
 `<CHROM> <START> <END> <PLOIDY>`
 
@@ -87,49 +87,40 @@ NC_000001.10    10051   10054   2
 ```
 
 
-Both tools by default merge the resulting entries with a default merging
-distance of 0.  If merging is disabled, it is recommended to immediately pipe
+N.B. By default the tools merge the resulting entries with a default merging
+distance of 0. If merging is disabled, it is recommended to immediately pipe
 the results of gvcf2coverage(.py) to `bedtools merge` to merge all the
 individual adjecent entries. Note that bedtools will also merge the entries
 with a different value in the ploidy column, therefore we opted to do the
 merging in the gvcf2coverage tool.
 
-### Python
-
-Requirements
-
-python >= 3.6
-
-Virtual environment with cyvcf2.
-e.g.:
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install cyvcf2
-```
-
-```
-usage: gvcf2coverage.py [-h] [--threshold THRESHOLD] [--no_merge] [--distance DISTANCE]
-```
+N.B. This repository contains two functionally similar implementations of a coverage
+extractor from gVCF files. The Python version is more readable and apt for modification, but the C version
+is roughly 12x faster.
 
 
-### C
+## Submitting to the Varda database
 
-Requires HTSLIB library.
+After the variants and coverage files are created per sample, they need to be submitted using the varda2-client in the following way:
 
-
-On the LUMC Slurm Shark cluster this means:
-```
-module load library/htslib/1.10.2/gcc-8.3.1
-make
+- submit:
+  - ```
+varda2-client submit \
+--disease-code {params.disease_code} \
+--lab-sample-id {params.sample_id} \
+--coverage {input.coverage} \
+--variants-file {input.variants} \
+> {output}
 ```
 
-If your location is non-standard you can pass it like this to the makefile:
+This results in a JSON file with the following format:
 ```
-make HTSLIB_INCDIR=../../../samtools/include HTSLIB_LIBDIR=../../../samtools/lib
+{
+"<LAB_SAMPLE_ID>": {
+    "message": "Sample being inserted ...",
+    "sample": "<VARDA_SAMPLE_ID>",
+    "task": "<TASK_SAMPLE_ID>"
+  }
+}
 ```
 
-And for running:
-```
-export LD_LIBRARY_PATH=$HTSLIB_LIBDIR
-```
