@@ -125,15 +125,33 @@ This results in a JSON file with the following format:
 
 ## Software
 
-- bcftools:
-  - container: https://quay.io/biocontainers/bcftools
 - gvcf2coverage:
+  - repo: https://github.com/varda/varda2_preprocessing
+  - conda: https://anaconda.org/bioconda/gvcf2coverage
   - container: https://quay.io/biocontainers/gvcf2coverage
+- pygvcf2coverage:
+  - repo: https://github.com/varda/varda2_preprocessing
+  - pypi: https://pypi.org/project/pygvcf2coverage/
+  - conda: https://anaconda.org/bioconda/pygvcf2coverage
+  - container: https://quay.io/biocontainers/pygvcf2coverage  
 - vcf2variants:
+  - repo: https://github.com/varda/varda2_preprocessing
+  - conda: https://anaconda.org/bioconda/vcf2variants
   - container: https://quay.io/biocontainers/vcf2variants
 - cthreepo:
+  - repo: https://github.com/vkkodali/cthreepo
+  - pypi: https://pypi.org/project/cthreepo/
+  - conda: https://anaconda.org/bioconda/chtreepo 
   - container: https://quay.io/biocontainers/cthreepo
 - varda2-client:
+  - repo: https://github.com/varda/varda2-client
+  - pypi: https://pypi.org/project/varda2-client
+  - conda: https://anaconda.org/bioconda/varda2-client
   - container: https://quay.io/biocontainers/varda2-client
+- bcftools:
+  - repo: https://github.com/samtools/bcftools
+  - conda: https://anaconda.org/bioconda/bcftools
+  - container: https://quay.io/biocontainers/bcftools
+
 
   
