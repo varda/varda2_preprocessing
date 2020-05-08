@@ -101,7 +101,7 @@ is roughly 12x faster.
 
 ## Submitting to the Varda database
 
-After the variants and coverage files are created per sample, they need to be submitted using the varda2-client in the following way:
+After the variants and coverage files are created per sample, they need to be submitted using the varda2-client in the following way. The `varda2-client` expects the supplied access token to be present in the `VARDA_TOKEN` environment variable.
 
 ```
 varda2-client submit \
