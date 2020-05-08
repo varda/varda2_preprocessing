@@ -136,6 +136,7 @@ This results in a JSON file with the following format:
   - container: https://quay.io/biocontainers/pygvcf2coverage  
 - vcf2variants:
   - repo: https://github.com/varda/varda2_preprocessing
+  - pypi: https://pypi.org/project/vcf2variants/
   - conda: https://anaconda.org/bioconda/vcf2variants
   - container: https://quay.io/biocontainers/vcf2variants
 - cthreepo:
