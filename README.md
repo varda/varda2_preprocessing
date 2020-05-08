@@ -123,3 +123,17 @@ This results in a JSON file with the following format:
 }
 ```
 
+## Software
+
+- bcftools:
+  - container: https://quay.io/biocontainers/bcftools
+- gvcf2coverage:
+  - container: https://quay.io/biocontainers/gvcf2coverage
+- vcf2variants:
+  - container: https://quay.io/biocontainers/vcf2variants
+- cthreepo:
+  - container: https://quay.io/biocontainers/cthreepo
+- varda2-client:
+  - container: https://quay.io/biocontainers/varda2-client
+
+  
