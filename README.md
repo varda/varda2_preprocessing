@@ -7,7 +7,7 @@ these steps are not cast in stone and hopefully will converge as a set of best
 practices between the centers.
 
 The information about variants comes from VCF files and the information about
-coverage comes from gVCF files. The following sections describe the steps
+coverage comes from gVCF files. The following sections describe the process
 in more detail.
 
 ## Workflow
@@ -30,7 +30,6 @@ To extract variants from the VCF file in a way that Varda can process them, mult
 The first step is a pipeline of `bcftools` filtering and normalisation to get
 rid of alt-alleles and multi-allelic entries so that we end up with a single
 variant per line.
-
 
 The second step is to take the filtered VCF file and convert it into a Varda
 variant file.
@@ -69,6 +68,8 @@ To extract the coverage from gVCF files, the following steps are required.
   - `gvcf2coverage < {input} > {output}`
 - cov_cthreepo:
   - `cthreepo --mapfile h37 --infile {input} --id_from uc --outfile {output} --id_to rs`
+
+The second step is only required if there are no proper refseq id's used, i.e. only `chr1` or even `1` instead of `NC_000001.10`.
 
 This outputs the following tab separated format:
 
