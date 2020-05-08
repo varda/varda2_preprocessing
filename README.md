@@ -7,47 +7,44 @@ these steps are not cast in stone and hopefully will converge as a set of best
 practices between the centers.
 
 The information about variants comes from VCF files and the information about
-coverage comes from gVCF files. The following two sections describe the steps
+coverage comes from gVCF files. The following sections describe the steps
 in more detail.
+
+## Workflow
+
+The following figure depicts the process DAG generated from the Snakemake workflow at https://git.lumc.nl/klinische-genetica/capture-lumc/vcf-to-varda.
 
 ![Process Flow](dag.png)
 
-## Variants
+### Variants
 
-To extract variants from the VCF file in a way that Varda can process them
-there are two steps involved.
+To extract variants from the VCF file in a way that Varda can process them, multiple steps are involved:
+
+- trim_alt_and_uncalled:
+  - `bcftools view --trim-alt-alleles --exclude-uncalled --output-file {output} {input}`
+- split_multi:
+  - `bcftools norm --multiallelics - --output {output} {input}`
+- exclude_alt_star:
+  - `bcftools view --exclude 'ALT==\"*\"' --output-file {output} {input}`
 
 The first step is a pipeline of `bcftools` filtering and normalisation to get
 rid of alt-alleles and multi-allelic entries so that we end up with a single
 variant per line.
 
-```
-bcftools view --trim-alt-alleles --exclude-uncalled <INPUT_VCF> | \
-  bcftools norm --multiallelics - | \
-  bcftools view --exclude 'ALT=="*"' > <OUTPUT_VCF>
-```
 
 The second step is to take the filtered VCF file and convert it into a Varda
 variant file.
 
-Requirements:
-- python >= 3.6
-- cyvcf2
+- vcf2varda:
+  - `vcf2variants < {input} > {output}`
 
-To create a virtual environment with cyvcf2:
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install cyvcf2
-```
+The last step is only required if there are no proper refseq id's used, i.e. only `chr1` or even `1` instead of `NC_000001.10`.
 
-```
-usage: vcf2variants.py < <VCF_FILE> > variants.varda
-```
+- var_cthreepo:
+  - `cthreepo --mapfile h37 --infile {input} --id_from uc --outfile {output} --id_to rs`
 
 This outputs the following tab separated format:
 `<CHROM> <START> <END> <PLOIDY> <PHASE SET> <INSERTED LENGTH> <INSERTED SEQUENCE>`
-
 
 e.g.:
 ```
