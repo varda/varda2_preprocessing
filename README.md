@@ -103,8 +103,7 @@ is roughly 12x faster.
 
 After the variants and coverage files are created per sample, they need to be submitted using the varda2-client in the following way:
 
-- submit:
-  - ```
+```
 varda2-client submit \
 --disease-code {params.disease_code} \
 --lab-sample-id {params.sample_id} \
