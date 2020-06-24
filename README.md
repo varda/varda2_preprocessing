@@ -99,8 +99,9 @@ N.B. This repository contains two functionally similar implementations of a cove
 extractor from gVCF files. The Python version is more readable and apt for modification, but the C version
 is roughly 12x faster.
 
-N.B. When a field that is specified using the `-f` flag is not present, the
-threshold will be applied to the `DP` field as a fall-back.
+N.B. When the `MIN_DP` field is not present (when using the `-m` flag), the `DP`
+field is used as a fall-back. This is typically the case for variants, since
+`MIN_DP` is not written for variant sites.
 
 ## Submitting to the Varda database
 

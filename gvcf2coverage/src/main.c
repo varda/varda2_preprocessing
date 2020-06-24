@@ -38,7 +38,7 @@ main(int argc, char* argv[])
     char* field = "DP";
 
     int opt = -1;
-    while ((opt = getopt(argc, argv, "t:nd:hf:")) != -1)
+    while ((opt = getopt(argc, argv, "t:nd:hm")) != -1)
     {
         switch (opt)
         {
@@ -59,8 +59,8 @@ main(int argc, char* argv[])
             case '?':
                 err = true;
                 break;
-            case 'f':
-                field = optarg;
+            case 'm':
+                field = "MIN_DP";
                 break;
         } // switch
     } // while
@@ -73,7 +73,7 @@ main(int argc, char* argv[])
 
     if (err || hflag)
     {
-        static char const* const usage = "usage: %s [-h] [-t threshold] [-d distance] [-n] [-f field]\n";
+        static char const* const usage = "usage: %s [-h] [-t threshold] [-d distance] [-n] [-m]\n";
         fprintf(stderr, usage, argv[0]);
         if (err)
         {
