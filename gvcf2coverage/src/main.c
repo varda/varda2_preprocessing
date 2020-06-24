@@ -35,9 +35,10 @@ main(int argc, char* argv[])
     bool dflag = false;
     bool hflag = false;
     bool err = false;
+    char* field = "DP";
 
     int opt = -1;
-    while ((opt = getopt(argc, argv, "t:nd:h")) != -1)
+    while ((opt = getopt(argc, argv, "t:nd:hf:")) != -1)
     {
         switch (opt)
         {
@@ -58,6 +59,9 @@ main(int argc, char* argv[])
             case '?':
                 err = true;
                 break;
+            case 'f':
+                field = optarg;
+                break;
         } // switch
     } // while
 
@@ -69,7 +73,7 @@ main(int argc, char* argv[])
 
     if (err || hflag)
     {
-        static char const* const usage = "usage: %s [-h] [-t threshold] [-d distance] [-n]\n";
+        static char const* const usage = "usage: %s [-h] [-t threshold] [-d distance] [-n] [-f field]\n";
         fprintf(stderr, usage, argv[0]);
         if (err)
         {
@@ -130,10 +134,21 @@ main(int argc, char* argv[])
     while (0 == bcf_read(fh, hdr, rec))
     {
         int32_t depth = 0;
-        if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &(int){0}))
+        if (1 == bcf_get_format_int32(hdr, rec, field, &dp, &(int){0}))
         {
             depth = dp[0];
         } // if
+
+        //
+        // MIN_DP is only defined for non variant site. If MIN_DP is not
+        // defined, we revert back to DP.
+        //
+        else {
+            if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &(int){0}))
+            {
+                depth = dp[0];
+            } // if
+        } //else
 
         //
         // If depth is below the threshold, no need to proceed

@@ -99,6 +99,8 @@ N.B. This repository contains two functionally similar implementations of a cove
 extractor from gVCF files. The Python version is more readable and apt for modification, but the C version
 is roughly 12x faster.
 
+N.B. When a field that is specified using the `-f` flag is not present, the
+threshold will be applied to the `DP` field as a fall-back.
 
 ## Submitting to the Varda database
 
