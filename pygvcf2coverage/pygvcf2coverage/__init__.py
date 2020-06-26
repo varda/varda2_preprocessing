@@ -7,7 +7,7 @@ def eprint(*args):
     print(*args, file=sys.stderr)
 
 
-def gvcf2coverage(threshold, merge, distance):
+def gvcf2coverage(threshold, merge, distance, use_min_dp):
 
     vcf = VCF(fname='-', gts012=False, lazy=False, strict_gt=False)
 
@@ -27,7 +27,10 @@ def gvcf2coverage(threshold, merge, distance):
         jump = False
 
         # Depth
-        dp = entry.format('DP')
+        if use_min_dp:
+            dp = entry.format('MIN_DP') or entry.format('DP')
+        else:
+            dp = entry.format('DP')
 
         if dp is None:
             depth = 0
@@ -110,6 +113,8 @@ def main():
     parser.add_argument('--threshold', '-t', type=int, default=10, help='DP threshold')
     parser.add_argument('--no_merge', '-n', dest='merge', action='store_false', help='Do not merge entries')
     parser.add_argument('--distance', '-d', type=int, default=0, help='Merging distance')
+    parser.add_argument('--min-dp', '-m', action='store_true', default=False,
+                        help='Apply threshold to MIN_DP. DP will be used when a site has no MIN_DP field')
     args = parser.parse_args()
 
-    gvcf2coverage(args.threshold, args.merge, args.distance)
+    gvcf2coverage(args.threshold, args.merge, args.distance, args.min_dp)
