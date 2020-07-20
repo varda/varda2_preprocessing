@@ -66,7 +66,9 @@ NB:
 ## Coverage
 
 This repository contains two functionally similar implementations of a coverage
-extractor from gVCF files.
+extractor from gVCF files.  Coverage is measuered in read depth. We use the
+`MIN_DP` field where available (non-variant regions) with a fallback to the
+`DP` field (variants).
 
 The Python version is more readable and apt for modification, but the C version
 is roughly 12x faster.
