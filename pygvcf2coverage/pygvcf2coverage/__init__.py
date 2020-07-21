@@ -27,10 +27,14 @@ def gvcf2coverage(threshold, merge, distance):
         jump = False
 
         # Depth
-        dp = entry.format('DP')
+        dp = entry.format('MIN_DP')
 
         if dp is None:
-            depth = 0
+            dp = entry.format('DP')
+            if dp is None:
+                depth = 0
+            else
+                depth = dp[0][0]
         else:
             depth = dp[0][0]
 

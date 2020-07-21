@@ -130,9 +130,13 @@ main(int argc, char* argv[])
     while (0 == bcf_read(fh, hdr, rec))
     {
         int32_t depth = 0;
-        if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &(int){0}))
+        if (1 == bcf_get_format_int32(hdr, rec, "MIN_DP", &dp, &(int){0}))
         {
             depth = dp[0];
+        } // if
+        else if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &(int){0}))
+        {
+                depth = dp[0];
         } // if
 
         //

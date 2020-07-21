@@ -63,6 +63,9 @@ NB:
 ## Coverage
 
 To extract the coverage from gVCF files, the following steps are required.
+Coverage is measuered in read depth. We use the `MIN_DP` field where
+available (non-variant regions) with a fallback to the `DP` field
+(variants).
 
 - gvcf2coverage:
   - `gvcf2coverage < {input} > {output}`
