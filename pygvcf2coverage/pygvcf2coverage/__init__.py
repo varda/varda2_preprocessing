@@ -103,8 +103,9 @@ def gvcf2coverage(threshold, merge, distance):
 
     #
     # If the last iteration of the loop was not a jump, we still need to print
+    # JKV: I'm not sure about the jump
     #
-    if merge and not jump:
+    if merge:
         print(window_chrom, window_start, window_end, window_ploidy, sep="\t")
 
 

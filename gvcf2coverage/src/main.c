@@ -120,7 +120,6 @@ main(int argc, char* argv[])
     int32_t* gt = NULL;
 
     bool first = true;
-    bool jump = false;
 
     int window_start = 0;
     int window_end = 0;
@@ -197,7 +196,6 @@ main(int argc, char* argv[])
             window_ploidy != ploidy ||
             window_end + distance < start)
         {
-            jump = true;
             // eprint(f"Chrom changed from {window_chrom} to {chrom}.")
             (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
 
@@ -208,7 +206,6 @@ main(int argc, char* argv[])
         } // if
         else
         {
-            jump = false;
             window_start = imin(window_start, start);
             window_end = imax(window_end, end);
             // eprint(f"No jump! s:{start}, w_s={window_start} e:{end} w_e={window_end}")
@@ -217,8 +214,9 @@ main(int argc, char* argv[])
 
     //
     // If the last iteration of the loop was not a jump, we still need to print
+    // JKV: I'm not sure about the jump
     //
-    if (merge && !jump)
+    if (merge)
     {
         (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
     } // if
