@@ -33,7 +33,7 @@ def gvcf2coverage(threshold, merge, distance):
             dp = entry.format('DP')
             if dp is None:
                 depth = 0
-            else
+            else:
                 depth = dp[0][0]
         else:
             depth = dp[0][0]
