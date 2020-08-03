@@ -1,4 +1,4 @@
-// VERSION 0.1
+// VERSION 0.4
 
 #include <stdbool.h>    // bool, false, true
 #include <stddef.h>     // size_t
