@@ -177,7 +177,7 @@ main(int argc, char* argv[])
         } // if
 
         //
-        // We just started
+        // Open window for first entry
         //
         if (first)
         {
@@ -186,17 +186,18 @@ main(int argc, char* argv[])
             window_chrom = chrom;
             window_ploidy = ploidy;
 
-            // eprint(f"First! c:{window_chrom} s:{start}, w_s={window_start} e:{end} w_e={window_end}")
-
             first = false;
             continue;
         } // if
 
+        //
+        // Detect if we need to close and open a new window
+        //
         if (window_chrom != chrom ||
             window_ploidy != ploidy ||
             window_end + distance < start)
         {
-            // eprint(f"Chrom changed from {window_chrom} to {chrom}.")
+            // Close the window
             (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
 
             window_start = start;
@@ -206,17 +207,16 @@ main(int argc, char* argv[])
         } // if
         else
         {
+            // Extend the window
             window_start = imin(window_start, start);
             window_end = imax(window_end, end);
-            // eprint(f"No jump! s:{start}, w_s={window_start} e:{end} w_e={window_end}")
         } // else
     } // while
 
     //
-    // If the last iteration of the loop was not a jump, we still need to print
-    // JKV: I'm not sure about the jump
+    // Always print the last entry when merging, except if there were no entries
     //
-    if (merge)
+    if (merge && !first)
     {
         (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
     } // if
