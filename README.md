@@ -25,7 +25,7 @@ To extract variants from the VCF file in a way that Varda can process them, mult
 - split_multi:
   - `bcftools norm --multiallelics - --output {output} {input}`
 - exclude_alt_star:
-  - `bcftools view --exclude 'ALT==\"*\"' --output-file {output} {input}`
+  - `bcftools view --exclude 'ALT=="*"' --output-file {output} {input}`
 
 The first step is a pipeline of `bcftools` filtering and normalisation to get
 rid of alt-alleles and multi-allelic entries so that we end up with a single
