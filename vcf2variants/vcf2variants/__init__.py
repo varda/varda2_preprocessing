@@ -51,29 +51,32 @@ def trim(start, end, ref, alt):
 
 
 def to_varda(phase_sets):
+    print(phase_sets)
+    ps_ids = {}
     for (chrom, ps), alleles in phase_sets.items():
-        # print(chrom, ps, alleles)
+        if chrom not in ps_ids:
+            ps_ids[chrom] = {(0, 0): 0}
 
         homozygotes = set.intersection(*(set(allele) for allele in alleles))
-        #print(homozygotes)
         heterozygotes = [set(allele) - homozygotes for allele in alleles]
-        #print(heterozygotes)
-
-        unphased = sum(len(allele) for allele in heterozygotes) == 1
-        #print(unphased)
+        unique_variants = set.union(*(set(allele) for allele in heterozygotes))
 
         for start, end, sequence in homozygotes:
             yield chrom, start, end, len(alleles), -1, len(sequence), sequence or "."
 
-        for allele in heterozygotes:
-            for variant in allele:
-                if unphased:
-                    ps = 0
+        if len(unique_variants) == 1:
+            # We are now a heterozygous unphased variant
+            start, end, sequence = unique_variants.pop()
+            ploidy = sum(len(allele) for allele in heterozygotes)
+            yield chrom, start, end, ploidy, ps_ids[chrom][(0, 0)], len(sequence), sequence or "."
+        else:
+            for idx, allele in enumerate(heterozygotes):
+                for variant in allele:
+                    if (ps, idx) not in ps_ids[chrom]:
+                        ps_ids[chrom][(ps, idx)] = len(ps_ids[chrom])
 
-                ploidy = sum(variant in allele for allele in alleles)
-
-                start, end, sequence = variant
-                yield chrom, start, end, ploidy, ps, len(sequence), sequence or "."
+                    start, end, sequence = variant
+                    yield chrom, start, end, 1, ps_ids[chrom][(ps, idx)], len(sequence), sequence or "."
 
 
 def main():
