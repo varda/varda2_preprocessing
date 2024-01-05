@@ -1,0 +1,9 @@
+##fileformat=VCFv4.3
+##contig=<ID=NG_008376.4>
+##FILTER=<ID=PASS,Description="All filters passed">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	example
+NG_008376.4	5119		C	T		PASS		GT	0|0|1
+NG_008376.4	5156		T	TT		PASS		GT	0|1|0
+NG_008376.X	5119		C	T		PASS		GT	0|0|1
+NG_008376.X	5156		T	TT		PASS		GT	0|1|0
