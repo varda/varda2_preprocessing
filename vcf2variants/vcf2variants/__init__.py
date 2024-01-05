@@ -81,7 +81,7 @@ def main():
     parser.add_argument("filename", help="VCF file")
     args = parser.parse_args()
 
-    phase_sets = read_vcf(args.filename, trim)
+    _, phase_sets = read_vcf(args.filename, mod_func=trim)
     for entry in natsorted(to_varda(phase_sets)):
         print(*entry, sep="\t")
 
