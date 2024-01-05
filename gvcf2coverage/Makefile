@@ -1,8 +1,19 @@
-.PHONY: install
+TARGET   = gvcf2coverage
 
-gvcf2coverage: src/main.c
-	$(CC) -o $@ -Wall -Wextra -Wpedantic -std=c99 -O3 -I$(HTSLIB_INCDIR) -L$(HTSLIB_LIBDIR) src/main.c -lhts
+CC       = gcc
+CFLAGS   = -std=c99 -march=native -Wall -Wextra -Wpedantic \
+           -Wformat=2 -Wshadow -Wwrite-strings -Wstrict-prototypes \
+           -Wold-style-definition -Wredundant-decls -Wnested-externs \
+           -O3 -DNDEBUG
 
-install: gvcf2coverage
+.PHONY: clean install
+
+$(TARGET): src/main.c
+	$(CC) -o $@ $(CFLAGS) -I$(HTSLIB_INCDIR) -L$(HTSLIB_LIBDIR) $< -lhts
+
+clean:
+	rm $(TARGET)
+
+install: $(TARGET)
 	mkdir -p $(PREFIX)/bin
-	install -m 755 gvcf2coverage $(PREFIX)/bin
+	install -m 755 $< $(PREFIX)/bin

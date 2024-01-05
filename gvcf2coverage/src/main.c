@@ -1,4 +1,4 @@
-// VERSION 0.1
+// VERSION 0.4
 
 #include <stdbool.h>    // bool, false, true
 #include <stddef.h>     // size_t
@@ -120,7 +120,6 @@ main(int argc, char* argv[])
     int32_t* gt = NULL;
 
     bool first = true;
-    bool jump = false;
 
     int window_start = 0;
     int window_end = 0;
@@ -130,9 +129,13 @@ main(int argc, char* argv[])
     while (0 == bcf_read(fh, hdr, rec))
     {
         int32_t depth = 0;
-        if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &(int){0}))
+        if (1 == bcf_get_format_int32(hdr, rec, "MIN_DP", &dp, &(int){0}))
         {
             depth = dp[0];
+        } // if
+        else if (1 == bcf_get_format_int32(hdr, rec, "DP", &dp, &(int){0}))
+        {
+                depth = dp[0];
         } // if
 
         //
@@ -174,7 +177,7 @@ main(int argc, char* argv[])
         } // if
 
         //
-        // We just started
+        // Open window for first entry
         //
         if (first)
         {
@@ -183,18 +186,18 @@ main(int argc, char* argv[])
             window_chrom = chrom;
             window_ploidy = ploidy;
 
-            // eprint(f"First! c:{window_chrom} s:{start}, w_s={window_start} e:{end} w_e={window_end}")
-
             first = false;
             continue;
         } // if
 
+        //
+        // Detect if we need to close and open a new window
+        //
         if (window_chrom != chrom ||
             window_ploidy != ploidy ||
             window_end + distance < start)
         {
-            jump = true;
-            // eprint(f"Chrom changed from {window_chrom} to {chrom}.")
+            // Close the window
             (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
 
             window_start = start;
@@ -204,17 +207,16 @@ main(int argc, char* argv[])
         } // if
         else
         {
-            jump = false;
+            // Extend the window
             window_start = imin(window_start, start);
             window_end = imax(window_end, end);
-            // eprint(f"No jump! s:{start}, w_s={window_start} e:{end} w_e={window_end}")
         } // else
     } // while
 
     //
-    // If the last iteration of the loop was not a jump, we still need to print
+    // Always print the last entry when merging, except if there were no entries
     //
-    if (merge && !jump)
+    if (merge && !first)
     {
         (void) fprintf(stdout, "%s\t%d\t%d\t%d\n", window_chrom, window_start, window_end, window_ploidy);
     } // if
