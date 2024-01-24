@@ -51,7 +51,6 @@ def trim(start, end, ref, alt):
 
 
 def to_varda(phase_sets):
-    print(phase_sets)
     ps_ids = {}
     for (chrom, ps), alleles in phase_sets.items():
         if chrom not in ps_ids:
