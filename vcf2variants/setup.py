@@ -14,7 +14,7 @@ setup(name='vcf2variants',
     },
     install_requires=[
         'natsort',
-        'vcfphasesets',
+        'pysam',
     ],
     extras_require={
         'testing': [
