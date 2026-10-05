@@ -1,8 +1,6 @@
 import argparse
 from os.path import commonprefix
 
-from natsort import natsorted
-
 from pysam import VariantFile
 
 
@@ -67,7 +65,7 @@ def read_vcf(filename):
                 ps_id = rec.pos
                 active_ps_id = ps_id if entry.phased else 0
 
-            key = rec.chrom, ps_id
+            key = rec.rid, ps_id
             if key not in phase_sets:
                 phase_sets[key] = [[] for _ in entry["GT"]]
 
@@ -118,10 +116,14 @@ def main():
     parser = argparse.ArgumentParser(description="Read phase sets from single sample VCF 4.3 file.")
     parser.add_argument("filename", help="VCF file")
     args = parser.parse_args()
+    with VariantFile(args.filename) as vcf:
+        id_to_chrom = {value.id: value.name for value in vcf.header.contigs.values()}
 
     phase_sets = read_vcf(args.filename)
-    for entry in natsorted(to_varda(phase_sets)):
-        print(*entry, sep="\t")
+
+    for entry in sorted(to_varda(phase_sets)):
+        ref_id, start, end, ploidy, ps_id, length, sequence = entry
+        print(id_to_chrom[ref_id], start, end, ploidy, ps_id, length, sequence, sep="\t")
 
 
 if __name__ == "__main__":
