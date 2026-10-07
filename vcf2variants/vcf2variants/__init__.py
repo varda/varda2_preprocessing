@@ -1,9 +1,7 @@
 import argparse
 from os.path import commonprefix
 
-from natsort import natsorted
-
-from vcfphasesets import read_vcf
+from pysam import VariantFile
 
 
 # Strip the prefix from a string
@@ -50,6 +48,42 @@ def trim(start, end, ref, alt):
     return trim_start, trim_end, inserted
 
 
+def read_vcf(filename):
+    with VariantFile(filename) as vcf_file:
+        # Assume single sample VCF files for now (and forever)
+        assert len(vcf_file.header.samples) == 1
+
+        phase_sets = {}
+        active_ps_id = 0
+        for rec in vcf_file.fetch():
+            entry = rec.samples[0]
+
+            ps_id = entry.get("PS")
+            if entry.phased:
+                ps_id = ps_id or active_ps_id
+            if not ps_id:
+                ps_id = rec.pos
+                active_ps_id = ps_id if entry.phased else 0
+
+            key = rec.rid, ps_id
+            if key not in phase_sets:
+                phase_sets[key] = [[] for _ in entry["GT"]]
+
+            for idx, gt in enumerate(entry["GT"]):
+                if gt:
+                    alt = rec.alts[gt - 1]
+                    if "<" in alt or ">" in alt:
+                        raise ValueError("Cannot deal with symbolic alleles")
+
+                    if alt == "*":
+                        continue
+
+                    variant = trim(rec.start, rec.stop, rec.ref, alt)
+                    phase_sets[key][idx].append(variant)
+
+        return {key: value for key, value in phase_sets.items() if any(value)}
+
+
 def to_varda(phase_sets):
     ps_ids = {}
     for (chrom, ps), alleles in phase_sets.items():
@@ -82,10 +116,14 @@ def main():
     parser = argparse.ArgumentParser(description="Read phase sets from single sample VCF 4.3 file.")
     parser.add_argument("filename", help="VCF file")
     args = parser.parse_args()
+    with VariantFile(args.filename) as vcf:
+        id_to_chrom = {value.id: value.name for value in vcf.header.contigs.values()}
 
-    _, phase_sets = read_vcf(args.filename, mod_func=trim)
-    for entry in natsorted(to_varda(phase_sets)):
-        print(*entry, sep="\t")
+    phase_sets = read_vcf(args.filename)
+
+    for entry in sorted(to_varda(phase_sets)):
+        ref_id, start, end, ploidy, ps_id, length, sequence = entry
+        print(id_to_chrom[ref_id], start, end, ploidy, ps_id, length, sequence, sep="\t")
 
 
 if __name__ == "__main__":

@@ -13,8 +13,7 @@ setup(name='vcf2variants',
         'console_scripts': ['vcf2variants=vcf2variants:main'],
     },
     install_requires=[
-        'natsort',
-        'vcfphasesets',
+        'pysam',
     ],
     extras_require={
         'testing': [
