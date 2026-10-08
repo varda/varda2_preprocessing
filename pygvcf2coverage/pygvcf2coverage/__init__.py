@@ -27,10 +27,14 @@ def gvcf2coverage(threshold, merge, distance):
         jump = False
 
         # Depth
-        dp = entry.format('DP')
+        dp = entry.format('MIN_DP')
 
         if dp is None:
-            depth = 0
+            dp = entry.format('DP')
+            if dp is None:
+                depth = 0
+            else:
+                depth = dp[0][0]
         else:
             depth = dp[0][0]
 
@@ -56,51 +60,37 @@ def gvcf2coverage(threshold, merge, distance):
             continue
 
         #
-        # We just started
+        # Open window for first entry
         #
         if first:
-            # First entry
             window_start = start
             window_end = end
             window_chrom = chrom
             window_ploidy = ploidy
 
             first = False
-
-            # eprint(f"First! c:{window_chrom} s:{start}, w_s={window_start} e:{end} w_e={window_end}")
-
             continue
 
-        if window_chrom != chrom:
-            # eprint(f"Chrom changed from {window_chrom} to {chrom}.")
-            jump = True
-
-        elif window_ploidy != ploidy:
-            # eprint(f"Ploidy changed from {window_ploidy} to {ploidy}")
-            jump = True
-
-        elif window_end + distance < start:
-            # eprint("Gap! (window_end:%d < start:%d)" % (window_end + distance, start))
-            jump = True
-
-        if jump:
-            # eprint("Jump!")
+        #
+        # Detect if we need to close and open a new window
+        #
+        if window_chrom != chrom or window_ploidy != ploidy or window_end + distance < start:
+            # Close the window
             print(window_chrom, window_start, window_end, window_ploidy, sep="\t")
 
             window_start = start
             window_end = end
             window_chrom = chrom
             window_ploidy = ploidy
-
         else:
+            # Extend the window
             window_start = min(window_start, start)
             window_end = max(window_end, end)
-            # eprint(f"No jump! s:{start}, w_s={window_start} e:{end} w_e={window_end}")
 
     #
-    # If the last iteration of the loop was not a jump, we still need to print
+    # Always print the last entry when merging, except if there were no entries
     #
-    if merge and not jump:
+    if merge and not first:
         print(window_chrom, window_start, window_end, window_ploidy, sep="\t")
 
 

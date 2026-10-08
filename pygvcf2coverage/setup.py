@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pygvcf2coverage',
-    version='0.3',
+    version='0.4',
     description='A python tool to extract coverage from gvcf files.',
     url='http://github.com/varda/varda2_preprocessing',
     author='Mark Santcroos',
